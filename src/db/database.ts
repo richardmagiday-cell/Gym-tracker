@@ -114,6 +114,36 @@ export function getPersonalRecords(): PersonalRecord[] {
   );
 }
 
+// Returns each set from the most recent session that logged this exercise.
+// Used to show "last session" weight + actual reps next to coach targets.
+export function getLastSetsForExercise(
+  exerciseName: string
+): { setNumber: number; reps: number; weightLbs: number }[] {
+  return db.getAllSync(
+    `SELECT ws.set_number as setNumber, ws.reps, ws.weight_lbs as weightLbs
+     FROM workout_sets ws
+     WHERE ws.exercise_name = ?
+       AND ws.workout_id = (
+         SELECT workout_id FROM workout_sets
+         WHERE exercise_name = ?
+         ORDER BY created_at DESC
+         LIMIT 1
+       )
+     ORDER BY ws.set_number ASC`,
+    exerciseName, exerciseName
+  );
+}
+
+// Returns which of the supplied dates actually have a logged workout.
+export function getWorkoutsOnDates(dates: string[]): string[] {
+  if (dates.length === 0) return [];
+  const placeholders = dates.map(() => '?').join(',');
+  return db.getAllSync<{ date: string }>(
+    `SELECT DISTINCT date FROM workouts WHERE date IN (${placeholders})`,
+    ...dates
+  ).map(r => r.date);
+}
+
 export function getProgressForExercise(
   exerciseName: string
 ): { date: string; maxWeight: number }[] {
