@@ -1,5 +1,6 @@
 import * as SQLite from 'expo-sqlite';
 import { WorkoutSet, Workout, PersonalRecord } from '../types';
+import { WORKOUT_TEMPLATES, getTemplateByKey, WorkoutTemplate, TemplateExercise } from '../data/program';
 
 const db = SQLite.openDatabaseSync('gymtracker.db');
 
@@ -8,6 +9,26 @@ export interface Program {
   name: string;
   isActive: boolean;
 }
+
+export interface DBTemplateExercise {
+  id: number;
+  exerciseId: number;
+  name: string;
+  muscleGroup: string;
+  notes: string;
+  sortOrder: number;
+  sets: DBTemplateSet[];
+}
+
+export interface DBTemplateSet {
+  id: number;
+  setNumber: number;
+  targetReps: string;
+  prevWeight: string;
+  notes: string;
+}
+
+// ─── Init ────────────────────────────────────────────────────────────────────
 
 export function initDatabase() {
   db.execSync(`
@@ -51,15 +72,50 @@ export function initDatabase() {
       PRIMARY KEY (program_id, day_of_week),
       FOREIGN KEY (program_id) REFERENCES programs(id)
     );
+
+    CREATE TABLE IF NOT EXISTS template_exercises (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      program_id INTEGER NOT NULL,
+      template_key TEXT NOT NULL,
+      exercise_id INTEGER NOT NULL,
+      exercise_name TEXT NOT NULL,
+      muscle_group TEXT NOT NULL,
+      exercise_notes TEXT DEFAULT '',
+      sort_order INTEGER NOT NULL DEFAULT 0,
+      FOREIGN KEY (program_id) REFERENCES programs(id)
+    );
+
+    CREATE TABLE IF NOT EXISTS template_sets (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      template_exercise_id INTEGER NOT NULL,
+      set_number INTEGER NOT NULL,
+      target_reps TEXT NOT NULL,
+      prev_weight TEXT DEFAULT '',
+      notes TEXT DEFAULT '',
+      FOREIGN KEY (template_exercise_id) REFERENCES template_exercises(id)
+    );
   `);
 
+  // Seed default program if none exist
   const count = db.getFirstSync<{ count: number }>('SELECT COUNT(*) as count FROM programs');
   if (!count || count.count === 0) {
     seedDefaultProgram();
   }
 
-  // Migrate any existing schedules that still reference the removed pull_b template
+  // Migrate old template key references
   db.runSync(`UPDATE schedules SET template_key = 'pull' WHERE template_key IN ('pull_a', 'pull_b')`);
+
+  // Seed template exercises for active program if not yet done
+  const activeId = getActiveProgramId();
+  if (activeId !== null) {
+    const exCount = db.getFirstSync<{ count: number }>(
+      'SELECT COUNT(*) as count FROM template_exercises WHERE program_id = ?',
+      activeId
+    );
+    if (!exCount || exCount.count === 0) {
+      seedTemplatesForProgram(activeId);
+    }
+  }
 }
 
 function seedDefaultProgram() {
@@ -83,9 +139,39 @@ function seedDefaultProgram() {
       id, parseInt(day), key
     );
   }
+  seedTemplatesForProgram(id);
+}
+
+export function seedTemplatesForProgram(programId: number) {
+  for (const template of WORKOUT_TEMPLATES) {
+    for (let i = 0; i < template.exercises.length; i++) {
+      const ex = template.exercises[i];
+      const result = db.runSync(
+        `INSERT INTO template_exercises
+         (program_id, template_key, exercise_id, exercise_name, muscle_group, exercise_notes, sort_order)
+         VALUES (?, ?, ?, ?, ?, ?, ?)`,
+        programId, template.key, ex.exerciseId, ex.name,
+        ex.muscleGroup, ex.exerciseNotes ?? '', i
+      );
+      const exId = result.lastInsertRowId;
+      for (const s of ex.sets) {
+        db.runSync(
+          `INSERT INTO template_sets (template_exercise_id, set_number, target_reps, prev_weight, notes)
+           VALUES (?, ?, ?, ?, ?)`,
+          exId, s.setNumber, s.targetReps, s.prevWeight, s.notes ?? ''
+        );
+      }
+    }
+  }
 }
 
 // ─── Program management ──────────────────────────────────────────────────────
+
+export function getActiveProgramId(): number | null {
+  return db.getFirstSync<{ id: number }>(
+    'SELECT id FROM programs WHERE is_active = 1'
+  )?.id ?? null;
+}
 
 export function getPrograms(): Program[] {
   return db.getAllSync<{ id: number; name: string; is_active: number }>(
@@ -132,6 +218,7 @@ export function createProgram(name: string, schedule: Record<number, string>): n
       programId, parseInt(day), key
     );
   }
+  seedTemplatesForProgram(programId);
   return programId;
 }
 
@@ -150,8 +237,129 @@ export function renameProgram(id: number, name: string): void {
 }
 
 export function deleteProgram(id: number): void {
+  db.runSync('DELETE FROM template_sets WHERE template_exercise_id IN (SELECT id FROM template_exercises WHERE program_id = ?)', id);
+  db.runSync('DELETE FROM template_exercises WHERE program_id = ?', id);
   db.runSync('DELETE FROM schedules WHERE program_id = ?', id);
   db.runSync('DELETE FROM programs WHERE id = ?', id);
+}
+
+// ─── Template exercises (editable per program) ───────────────────────────────
+
+export function getDBTemplate(programId: number, templateKey: string): DBTemplateExercise[] {
+  const rows = db.getAllSync<{
+    id: number; exercise_id: number; exercise_name: string;
+    muscle_group: string; exercise_notes: string; sort_order: number;
+  }>(
+    `SELECT id, exercise_id, exercise_name, muscle_group, exercise_notes, sort_order
+     FROM template_exercises
+     WHERE program_id = ? AND template_key = ?
+     ORDER BY sort_order ASC, id ASC`,
+    programId, templateKey
+  );
+  return rows.map(ex => {
+    const sets = db.getAllSync<{
+      id: number; set_number: number; target_reps: string;
+      prev_weight: string; notes: string;
+    }>(
+      `SELECT id, set_number, target_reps, prev_weight, notes
+       FROM template_sets WHERE template_exercise_id = ?
+       ORDER BY set_number ASC`,
+      ex.id
+    );
+    return {
+      id: ex.id,
+      exerciseId: ex.exercise_id,
+      name: ex.exercise_name,
+      muscleGroup: ex.muscle_group,
+      notes: ex.exercise_notes,
+      sortOrder: ex.sort_order,
+      sets: sets.map(s => ({
+        id: s.id,
+        setNumber: s.set_number,
+        targetReps: s.target_reps,
+        prevWeight: s.prev_weight,
+        notes: s.notes,
+      })),
+    };
+  });
+}
+
+// Returns a WorkoutTemplate loaded from DB (exercises from DB, metadata from program.ts)
+export function getWorkoutFromDB(programId: number, templateKey: string): WorkoutTemplate {
+  const base = getTemplateByKey(templateKey);
+  const dbExercises = getDBTemplate(programId, templateKey);
+  const exercises: TemplateExercise[] = dbExercises.map(ex => ({
+    exerciseId: ex.exerciseId,
+    name: ex.name,
+    muscleGroup: ex.muscleGroup,
+    exerciseNotes: ex.notes || undefined,
+    sets: ex.sets.map(s => ({
+      setNumber: s.setNumber,
+      targetReps: s.targetReps,
+      prevWeight: s.prevWeight,
+      notes: s.notes || undefined,
+    })),
+  }));
+  return { ...base, exercises };
+}
+
+export function addTemplateExercise(
+  programId: number, templateKey: string,
+  name: string, muscleGroup: string, notes: string
+): number {
+  const maxOrder = db.getFirstSync<{ m: number | null }>(
+    'SELECT MAX(sort_order) as m FROM template_exercises WHERE program_id = ? AND template_key = ?',
+    programId, templateKey
+  )?.m ?? -1;
+  const result = db.runSync(
+    `INSERT INTO template_exercises
+     (program_id, template_key, exercise_id, exercise_name, muscle_group, exercise_notes, sort_order)
+     VALUES (?, ?, ?, ?, ?, ?, ?)`,
+    programId, templateKey, Date.now(), name, muscleGroup, notes, (maxOrder ?? -1) + 1
+  );
+  return result.lastInsertRowId;
+}
+
+export function updateTemplateExercise(
+  id: number, name: string, muscleGroup: string, notes: string
+): void {
+  db.runSync(
+    'UPDATE template_exercises SET exercise_name = ?, muscle_group = ?, exercise_notes = ? WHERE id = ?',
+    name, muscleGroup, notes, id
+  );
+}
+
+export function deleteTemplateExercise(id: number): void {
+  db.runSync('DELETE FROM template_sets WHERE template_exercise_id = ?', id);
+  db.runSync('DELETE FROM template_exercises WHERE id = ?', id);
+}
+
+export function addTemplateSet(
+  exerciseDbId: number, targetReps: string, prevWeight: string
+): number {
+  const maxSetNum = db.getFirstSync<{ m: number | null }>(
+    'SELECT MAX(set_number) as m FROM template_sets WHERE template_exercise_id = ?',
+    exerciseDbId
+  )?.m ?? 0;
+  const result = db.runSync(
+    `INSERT INTO template_sets (template_exercise_id, set_number, target_reps, prev_weight, notes)
+     VALUES (?, ?, ?, ?, '')`,
+    exerciseDbId, (maxSetNum ?? 0) + 1, targetReps, prevWeight
+  );
+  return result.lastInsertRowId;
+}
+
+export function updateTemplateSet(
+  id: number, targetReps: string, prevWeight: string, notes: string
+): void {
+  db.runSync(
+    'UPDATE template_sets SET target_reps = ?, prev_weight = ?, notes = ? WHERE id = ?',
+    targetReps, prevWeight, notes, id
+  );
+}
+
+export function deleteTemplateSet(id: number): void {
+  db.runSync('DELETE FROM template_sets WHERE id = ?', id);
 }
 
 // ─── Workout logging ─────────────────────────────────────────────────────────
@@ -168,6 +376,11 @@ export function getWorkouts(): Workout[] {
   return db.getAllSync<Workout>(
     'SELECT id, date, notes FROM workouts ORDER BY date DESC'
   );
+}
+
+export function deleteWorkout(id: number): void {
+  db.runSync('DELETE FROM workout_sets WHERE workout_id = ?', id);
+  db.runSync('DELETE FROM workouts WHERE id = ?', id);
 }
 
 export function addSet(
@@ -236,7 +449,6 @@ export function getPersonalRecords(): PersonalRecord[] {
   );
 }
 
-// Returns each set from the most recent session that logged this exercise.
 export function getLastSetsForExercise(
   exerciseName: string
 ): { setNumber: number; reps: number; weightLbs: number }[] {

@@ -32,7 +32,7 @@ export const DAILY_SCHEDULE: Record<number, string> = {
 };
 
 export const WORKOUT_TEMPLATES: WorkoutTemplate[] = [
-  // ─── PULL (page 6) ─────────────────────────────────────────────────────────
+  // ─── PULL (page 7) ─────────────────────────────────────────────────────────
   {
     key: 'pull',
     name: 'Pull',

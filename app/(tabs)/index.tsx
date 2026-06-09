@@ -8,7 +8,10 @@ import {
   WORKOUT_TEMPLATES, REST_DAY,
   getTemplateByKey, WorkoutTemplate, TemplateExercise,
 } from '../../src/data/program';
-import { addSet, createWorkout, getLastSetsForExercise, getWorkoutsOnDates, getActiveSchedule } from '../../src/db/database';
+import {
+  addSet, createWorkout, getLastSetsForExercise, getWorkoutsOnDates,
+  getActiveSchedule, getActiveProgramId, getWorkoutFromDB,
+} from '../../src/db/database';
 
 // ─── helpers ────────────────────────────────────────────────────────────────
 
@@ -54,37 +57,20 @@ export default function TodaysWorkout() {
 
   useFocusEffect(
     useCallback(() => {
-      // Reload active schedule (may have changed in Program tab)
       const activeSchedule = getActiveSchedule();
       setSchedule(activeSchedule);
       const todayKey = activeSchedule[new Date().getDay()] ?? 'rest';
-      const todayTemplate = getTemplateByKey(todayKey);
+      const programId = getActiveProgramId();
+      const todayTemplate = programId
+        ? getWorkoutFromDB(programId, todayKey)
+        : getTemplateByKey(todayKey);
       setTemplate(todayTemplate);
-
-      // Load last-session data for today's template
-      const map: SessionMap = {};
-      for (const ex of todayTemplate.exercises) {
-        const rows = getLastSetsForExercise(ex.name);
-        const bySet: Record<number, LastSet> = {};
-        rows.forEach(r => { bySet[r.setNumber] = r; });
-        map[ex.exerciseId] = bySet;
-      }
-      setSessionMap(map);
-      // Load which days this week had workouts
+      loadSessionMap(todayTemplate);
       setCompletedDates(getWorkoutsOnDates(weekDays.map(d => d.date)));
     }, [])
   );
 
-  function switchTemplate(t: WorkoutTemplate) {
-    setTemplate(t);
-    setShowDayPicker(false);
-    setWorkoutId(null);
-    setLoggedCounts({});
-    setTodaySets({});
-    setActiveExerciseId(null);
-    setWeight('');
-    setReps('');
-    // Reload last-session data for the new template
+  function loadSessionMap(t: WorkoutTemplate) {
     const map: SessionMap = {};
     for (const ex of t.exercises) {
       const rows = getLastSetsForExercise(ex.name);
@@ -93,6 +79,20 @@ export default function TodaysWorkout() {
       map[ex.exerciseId] = bySet;
     }
     setSessionMap(map);
+  }
+
+  function switchTemplate(key: string) {
+    const programId = getActiveProgramId();
+    const t = programId ? getWorkoutFromDB(programId, key) : getTemplateByKey(key);
+    setTemplate(t);
+    setShowDayPicker(false);
+    setWorkoutId(null);
+    setLoggedCounts({});
+    setTodaySets({});
+    setActiveExerciseId(null);
+    setWeight('');
+    setReps('');
+    loadSessionMap(t);
   }
 
   function startWorkout() {
@@ -133,7 +133,7 @@ export default function TodaysWorkout() {
         <TouchableOpacity style={s.changeBtn} onPress={() => setShowDayPicker(p => !p)}>
           <Text style={s.changeBtnText}>Log a different day</Text>
         </TouchableOpacity>
-        {showDayPicker && <DayPicker current={template.key} onSelect={switchTemplate} />}
+        {showDayPicker && <DayPicker current={template.key} onSelect={key => switchTemplate(key)} />}
       </View>
     );
   }
@@ -155,7 +155,7 @@ export default function TodaysWorkout() {
               <TouchableOpacity
                 key={day.date}
                 style={[s.dayCell, isToday && s.dayCellToday, isSelected && s.dayCellSelected]}
-                onPress={() => wt ? switchTemplate(wt) : switchTemplate(REST_DAY)}
+                onPress={() => switchTemplate(key)}
               >
                 <Text style={[s.dayLabel, isToday && s.dayLabelToday]}>{day.label}</Text>
                 <Text style={[s.dayWorkout, isToday && s.dayWorkoutToday]} numberOfLines={1}>
@@ -182,7 +182,7 @@ export default function TodaysWorkout() {
           </TouchableOpacity>
         </View>
 
-        {showDayPicker && <DayPicker current={template.key} onSelect={switchTemplate} />}
+        {showDayPicker && <DayPicker current={template.key} onSelect={key => switchTemplate(key)} />}
 
         {!workoutId ? (
           <TouchableOpacity style={s.startBtn} onPress={startWorkout}>
@@ -310,17 +310,16 @@ export default function TodaysWorkout() {
 
 // ─── Day picker ──────────────────────────────────────────────────────────────
 
-function DayPicker({ current, onSelect }: { current: string; onSelect: (t: WorkoutTemplate) => void }) {
+function DayPicker({ current, onSelect }: { current: string; onSelect: (key: string) => void }) {
   return (
     <View style={s.picker}>
-      {WORKOUT_TEMPLATES.map(t => (
+      {[{ key: 'rest', name: 'Rest' }, ...WORKOUT_TEMPLATES].map(t => (
         <TouchableOpacity
           key={t.key}
           style={[s.pickerItem, t.key === current && s.pickerItemActive]}
-          onPress={() => onSelect(t)}
+          onPress={() => onSelect(t.key)}
         >
           <Text style={[s.pickerText, t.key === current && s.pickerTextActive]}>{t.name}</Text>
-          <Text style={s.pickerSub}>{t.exercises.length} exercises</Text>
         </TouchableOpacity>
       ))}
     </View>

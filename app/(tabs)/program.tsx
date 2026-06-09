@@ -3,7 +3,7 @@ import {
   View, Text, ScrollView, TouchableOpacity, TextInput,
   StyleSheet, Alert,
 } from 'react-native';
-import { useFocusEffect } from 'expo-router';
+import { useFocusEffect, router } from 'expo-router';
 import { WORKOUT_TEMPLATES, REST_DAY, getTemplateByKey } from '../../src/data/program';
 import {
   Program, getPrograms, getActiveSchedule, getScheduleForProgram,
@@ -259,6 +259,30 @@ export default function ProgramScreen() {
         </View>
       )}
 
+      {/* ── Workouts editor ── */}
+      {editingProgram && (
+        <View style={s.workoutsSection}>
+          <Text style={s.sectionTitle}>Edit Workouts: {editingProgram.name}</Text>
+          <Text style={s.workoutsSub}>Tap a workout to add, edit, or delete exercises and sets.</Text>
+          {WORKOUT_TEMPLATES.map(t => (
+            <TouchableOpacity
+              key={t.key}
+              style={s.workoutRow}
+              onPress={() => router.push({
+                pathname: '/edit-workout',
+                params: { programId: String(editingProgram.id), templateKey: t.key },
+              })}
+            >
+              <View style={{ flex: 1 }}>
+                <Text style={s.workoutRowName}>{t.name}</Text>
+                <Text style={s.workoutRowMeta}>{t.exercises.length} default exercises</Text>
+              </View>
+              <Text style={s.workoutRowArrow}>›</Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+      )}
+
       <View style={{ height: 40 }} />
     </ScrollView>
   );
@@ -320,4 +344,12 @@ const s = StyleSheet.create({
   checkmark:        { fontSize: 14, color: RED, fontWeight: '700' },
   saveBtn:          { backgroundColor: RED, borderRadius: 10, padding: 14, alignItems: 'center', marginTop: 12 },
   saveBtnText:      { color: '#fff', fontWeight: '800', fontSize: 15 },
+
+  // Workouts editor
+  workoutsSection:  { backgroundColor: '#f8f8f8', borderRadius: 12, padding: 14, borderWidth: 1, borderColor: '#eee', marginTop: 16 },
+  workoutsSub:      { fontSize: 12, color: '#aaa', marginBottom: 10 },
+  workoutRow:       { flexDirection: 'row', alignItems: 'center', backgroundColor: '#fff', borderRadius: 8, paddingHorizontal: 14, paddingVertical: 13, marginBottom: 6, borderWidth: 1, borderColor: '#eee' },
+  workoutRowName:   { fontSize: 14, fontWeight: '700', color: '#222' },
+  workoutRowMeta:   { fontSize: 11, color: '#aaa', marginTop: 2 },
+  workoutRowArrow:  { fontSize: 20, color: '#ccc', fontWeight: '300' },
 });
