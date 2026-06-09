@@ -267,10 +267,110 @@ export const WORKOUT_TEMPLATES: WorkoutTemplate[] = [
     ],
   },
 
-  // ─── PUSH B (page 9) ───────────────────────────────────────────────────────
+  // ─── PUSH B (page 6) ───────────────────────────────────────────────────────
   {
     key: 'push_b',
     name: 'Push B',
+    cardio: 'Incline walk 5 pace 2 – 20 min',
+    exercises: [
+      {
+        exerciseId: 19,
+        name: 'Pull Ups',
+        muscleGroup: 'Back',
+        exerciseNotes: 'Heavy',
+        sets: [
+          { setNumber: 1, targetReps: '12', prevWeight: 'BW' },
+          { setNumber: 2, targetReps: '12', prevWeight: 'BW' },
+        ],
+      },
+      {
+        exerciseId: 23,
+        name: 'Close Grip Pull Down',
+        muscleGroup: 'Back',
+        exerciseNotes: 'Heavy',
+        sets: [
+          { setNumber: 1, targetReps: '10',    prevWeight: '209' },
+          { setNumber: 2, targetReps: '12-15', prevWeight: '187' },
+        ],
+      },
+      {
+        exerciseId: 24,
+        name: 'Single Hand / High Pull Down',
+        muscleGroup: 'Back',
+        sets: [
+          { setNumber: 1, targetReps: '8', prevWeight: '77' },
+          { setNumber: 2, targetReps: '8', prevWeight: '77' },
+          { setNumber: 3, targetReps: '8', prevWeight: '77' },
+        ],
+      },
+      {
+        exerciseId: 25,
+        name: 'Bent Over Rows',
+        muscleGroup: 'Back',
+        sets: [
+          { setNumber: 1, targetReps: '6',   prevWeight: '185 / iso 3 plates' },
+          { setNumber: 2, targetReps: '6',   prevWeight: '185 / iso 3 plates' },
+          { setNumber: 3, targetReps: '12+', prevWeight: '135 / iso 2p+25' },
+        ],
+      },
+      {
+        exerciseId: 26,
+        name: 'Close Grip Rows',
+        muscleGroup: 'Back',
+        sets: [
+          { setNumber: 1, targetReps: '6',   prevWeight: '209' },
+          { setNumber: 2, targetReps: '6',   prevWeight: '214' },
+          { setNumber: 3, targetReps: '12+', prevWeight: '187' },
+        ],
+      },
+      {
+        exerciseId: 27,
+        name: 'Pullovers',
+        muscleGroup: 'Back',
+        sets: [
+          { setNumber: 1, targetReps: '8',  prevWeight: '82.5' },
+          { setNumber: 2, targetReps: '10', prevWeight: '82.5' },
+          { setNumber: 3, targetReps: '12', prevWeight: '82.5' },
+        ],
+      },
+      {
+        exerciseId: 1,
+        name: 'Hammer Curls',
+        muscleGroup: 'Biceps',
+        exerciseNotes: 'One arm at a time – rep count is per arm',
+        sets: [
+          { setNumber: 1, targetReps: '6',  prevWeight: '55' },
+          { setNumber: 2, targetReps: '6',  prevWeight: '55' },
+          { setNumber: 3, targetReps: '10', prevWeight: '55' },
+          { setNumber: 4, targetReps: '15', prevWeight: '45' },
+        ],
+      },
+      {
+        exerciseId: 2,
+        name: 'Preacher Cable Curls',
+        muscleGroup: 'Biceps',
+        exerciseNotes: 'Go up in weight if you hit 12',
+        sets: [
+          { setNumber: 1, targetReps: '12+', prevWeight: '70' },
+          { setNumber: 2, targetReps: '12+', prevWeight: '70' },
+        ],
+      },
+      {
+        exerciseId: 3,
+        name: 'Flat Bar Curls',
+        muscleGroup: 'Biceps',
+        sets: [
+          { setNumber: 1, targetReps: '6-8', prevWeight: '50' },
+          { setNumber: 2, targetReps: '15',  prevWeight: '50' },
+        ],
+      },
+    ],
+  },
+
+  // ─── PUSH/PULL A (page 9) — optional flex day ──────────────────────────────
+  {
+    key: 'push_pull_a',
+    name: 'Push/Pull A',
     cardio: 'Walk backwards on treadmill incline 5 for 10 min',
     exercises: [
       {
@@ -384,14 +484,6 @@ export const WORKOUT_TEMPLATES: WorkoutTemplate[] = [
         ],
       },
     ],
-  },
-
-  // ─── PUSH/PULL A — optional flex day ───────────────────────────────────────
-  {
-    key: 'push_pull_a',
-    name: 'Push/Pull A',
-    cardio: '',
-    exercises: [],
   },
 
   // ─── SHOULDER STRENGTHENING — optional flex day ─────────────────────────────
