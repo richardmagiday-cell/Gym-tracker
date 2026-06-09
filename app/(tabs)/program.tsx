@@ -19,6 +19,9 @@ const TEMPLATE_OPTIONS = [
   ...WORKOUT_TEMPLATES.map(t => ({ key: t.key, label: t.name })),
 ];
 
+// Keys that are flex/optional — shown separately in the schedule picker
+const OPTIONAL_KEYS = new Set(['arms', 'push_b', 'shoulder_recovery']);
+
 function templateLabel(key: string) {
   return TEMPLATE_OPTIONS.find(o => o.key === key)?.label ?? key;
 }

@@ -57,6 +57,9 @@ export function initDatabase() {
   if (!count || count.count === 0) {
     seedDefaultProgram();
   }
+
+  // Migrate any existing schedules that still reference the removed pull_b template
+  db.runSync(`UPDATE schedules SET template_key = 'pull' WHERE template_key IN ('pull_a', 'pull_b')`);
 }
 
 function seedDefaultProgram() {
@@ -67,11 +70,11 @@ function seedDefaultProgram() {
   const id = result.lastInsertRowId;
   const defaultSchedule: Record<number, string> = {
     0: 'rest',
-    1: 'pull_a',
+    1: 'pull',
     2: 'push_a',
     3: 'legs_a',
     4: 'push_b',
-    5: 'pull_b',
+    5: 'pull',
     6: 'legs_b',
   };
   for (const [day, key] of Object.entries(defaultSchedule)) {

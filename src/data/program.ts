@@ -22,20 +22,20 @@ export interface WorkoutTemplate {
 
 // Fallback static schedule — replaced at runtime by DB active schedule
 export const DAILY_SCHEDULE: Record<number, string> = {
-  1: 'pull_a',
+  1: 'pull',
   2: 'push_a',
   3: 'legs_a',
   4: 'push_b',
-  5: 'pull_b',
+  5: 'pull',
   6: 'legs_b',
   0: 'rest',
 };
 
 export const WORKOUT_TEMPLATES: WorkoutTemplate[] = [
-  // ─── PULL A (page 6) ───────────────────────────────────────────────────────
+  // ─── PULL (page 6) ─────────────────────────────────────────────────────────
   {
-    key: 'pull_a',
-    name: 'Pull A',
+    key: 'pull',
+    name: 'Pull',
     cardio: 'Incline walk 5 pace 2 – 20 min',
     exercises: [
       {
@@ -386,96 +386,20 @@ export const WORKOUT_TEMPLATES: WorkoutTemplate[] = [
     ],
   },
 
-  // ─── PULL B (page 5) ───────────────────────────────────────────────────────
+  // ─── PUSH/PULL A — optional flex day ───────────────────────────────────────
   {
-    key: 'pull_b',
-    name: 'Pull B',
-    cardio: 'No cardio',
-    exercises: [
-      {
-        exerciseId: 19,
-        name: 'Pull Ups',
-        muscleGroup: 'Back',
-        sets: [
-          { setNumber: 1, targetReps: '8',  prevWeight: 'BW' },
-          { setNumber: 2, targetReps: '12', prevWeight: 'BW' },
-        ],
-      },
-      {
-        exerciseId: 20,
-        name: 'Flat Dumbbell Press / Bench',
-        muscleGroup: 'Chest',
-        sets: [
-          { setNumber: 1, targetReps: '8', prevWeight: '225 / 90 DBs' },
-          { setNumber: 2, targetReps: '8', prevWeight: '245 / 90 DBs' },
-        ],
-      },
-      {
-        exerciseId: 21,
-        name: 'High Incline Smith Press',
-        muscleGroup: 'Chest / Shoulders',
-        sets: [
-          { setNumber: 1, targetReps: '6',   prevWeight: '225' },
-          { setNumber: 2, targetReps: '8',   prevWeight: '225' },
-          { setNumber: 3, targetReps: '12+', prevWeight: '185' },
-        ],
-      },
-      {
-        exerciseId: 22,
-        name: 'Lateral Raises',
-        muscleGroup: 'Shoulders',
-        exerciseNotes: 'HEAVY',
-        sets: [
-          { setNumber: 1, targetReps: '8',   prevWeight: '90' },
-          { setNumber: 2, targetReps: '8',   prevWeight: '90' },
-          { setNumber: 3, targetReps: '8',   prevWeight: '90' },
-          { setNumber: 4, targetReps: '15+', prevWeight: '90' },
-          { setNumber: 5, targetReps: '15+', prevWeight: '90' },
-        ],
-      },
-      {
-        exerciseId: 12,
-        name: 'Chest Flys',
-        muscleGroup: 'Chest',
-        sets: [
-          { setNumber: 1, targetReps: '8',   prevWeight: '160 / 85' },
-          { setNumber: 2, targetReps: '8',   prevWeight: '160 / 85' },
-          { setNumber: 3, targetReps: '15+', prevWeight: '160 / 85' },
-          { setNumber: 4, targetReps: '15+', prevWeight: '160 / 85' },
-        ],
-      },
-      {
-        exerciseId: 4,
-        name: 'Skull Crushers',
-        muscleGroup: 'Triceps',
-        exerciseNotes: 'If you do 12 go up in weight',
-        sets: [
-          { setNumber: 1, targetReps: '12+', prevWeight: '100' },
-          { setNumber: 2, targetReps: '12+', prevWeight: '100' },
-          { setNumber: 3, targetReps: '12+', prevWeight: '100' },
-        ],
-      },
-      {
-        exerciseId: 6,
-        name: 'Rope Tricep Extension',
-        muscleGroup: 'Triceps',
-        exerciseNotes: 'If you do 12 go up in weight',
-        sets: [
-          { setNumber: 1, targetReps: '12+', prevWeight: '71.5 / 25 single' },
-          { setNumber: 2, targetReps: '12+', prevWeight: '71.5 / 25 single' },
-          { setNumber: 3, targetReps: '12+', prevWeight: '71.5 / 25 single' },
-        ],
-      },
-      {
-        exerciseId: 13,
-        name: 'Dips',
-        muscleGroup: 'Triceps',
-        sets: [
-          { setNumber: 1, targetReps: 'F', prevWeight: 'BW' },
-          { setNumber: 2, targetReps: 'F', prevWeight: 'BW' },
-        ],
-      },
-    ],
+    key: 'push_pull_a',
+    name: 'Push/Pull A',
+    cardio: '',
+    exercises: [],
+  },
+
+  // ─── SHOULDER STRENGTHENING — optional flex day ─────────────────────────────
+  {
+    key: 'shoulder_strengthening',
+    name: 'Shoulder Strengthening',
+    cardio: '',
+    exercises: [],
   },
 
   // ─── LEGS B (page 8) ───────────────────────────────────────────────────────
