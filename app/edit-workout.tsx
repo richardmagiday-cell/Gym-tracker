@@ -130,8 +130,8 @@ export default function EditWorkout() {
   }
 
   return (
-    <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
-      <Stack.Screen options={{ title: `Edit: ${workoutName}`, headerBackTitle: 'Back' }} />
+    <KeyboardAvoidingView style={{ flex: 1, backgroundColor: '#F3F4F6' }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+      <Stack.Screen options={{ title: `Edit: ${workoutName}`, headerBackTitle: 'Back', headerStyle: { backgroundColor: '#111827' }, headerTintColor: '#fff', headerTitleStyle: { fontWeight: '800' } }} />
       <ScrollView style={s.container} keyboardShouldPersistTaps="handled">
 
         {exercises.length === 0 && (
@@ -312,49 +312,49 @@ export default function EditWorkout() {
 }
 
 const s = StyleSheet.create({
-  container:     { flex: 1, backgroundColor: '#fff', padding: 16 },
-  empty:         { color: '#aaa', textAlign: 'center', marginTop: 40, fontSize: 15 },
+  container:     { flex: 1, backgroundColor: '#F3F4F6', padding: 16 },
+  empty:         { color: '#9CA3AF', textAlign: 'center', marginTop: 40, fontSize: 15 },
 
   // Exercise card
-  exCard:        { backgroundColor: '#fafafa', borderRadius: 12, padding: 14, marginBottom: 12, borderWidth: 1, borderColor: '#eee' },
+  exCard:        { backgroundColor: '#fff', borderRadius: 14, padding: 16, marginBottom: 12, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.06, shadowRadius: 8, elevation: 3 },
   exHeader:      { flexDirection: 'row', alignItems: 'flex-start', marginBottom: 8 },
-  exName:        { fontSize: 15, fontWeight: '700', color: '#111' },
-  exMuscle:      { fontSize: 12, color: '#aaa', marginTop: 2 },
-  exNote:        { fontSize: 12, color: '#e67e22', fontStyle: 'italic', marginTop: 2 },
-  iconBtn:       { padding: 6, marginLeft: 6, borderRadius: 8, backgroundColor: '#f0f0f0' },
-  deleteIconBtn: { backgroundColor: '#fff0f0' },
+  exName:        { fontSize: 15, fontWeight: '800', color: '#111827' },
+  exMuscle:      { fontSize: 11, color: '#9CA3AF', marginTop: 2 },
+  exNote:        { fontSize: 12, color: '#D97706', fontStyle: 'italic', marginTop: 2 },
+  iconBtn:       { padding: 7, marginLeft: 6, borderRadius: 8, backgroundColor: '#F3F4F6' },
+  deleteIconBtn: { backgroundColor: '#FEF2F2' },
   iconBtnText:   { fontSize: 16 },
 
   // Edit form (exercise)
-  editForm:      { backgroundColor: '#fff8f8', borderRadius: 10, padding: 12, marginBottom: 10, borderWidth: 1, borderColor: '#fdd' },
-  editFormTitle: { fontSize: 13, fontWeight: '700', color: RED, marginBottom: 8 },
-  input:         { borderWidth: 1, borderColor: '#ddd', borderRadius: 8, padding: 10, fontSize: 14, backgroundColor: '#fff', marginBottom: 8 },
+  editForm:      { backgroundColor: '#FFF5F5', borderRadius: 12, padding: 14, marginBottom: 10, borderWidth: 1, borderColor: '#FECACA' },
+  editFormTitle: { fontSize: 13, fontWeight: '800', color: RED, marginBottom: 10 },
+  input:         { borderWidth: 1.5, borderColor: '#E5E7EB', borderRadius: 10, padding: 11, fontSize: 14, backgroundColor: '#fff', marginBottom: 8, color: '#111827' },
   formBtns:      { flexDirection: 'row', gap: 8 },
-  cancelBtn:     { flex: 1, backgroundColor: '#eee', borderRadius: 8, padding: 10, alignItems: 'center' },
-  cancelBtnText: { fontWeight: '700', color: '#666', fontSize: 14 },
-  saveBtn:       { flex: 1, backgroundColor: RED, borderRadius: 8, padding: 10, alignItems: 'center' },
-  saveBtnText:   { fontWeight: '700', color: '#fff', fontSize: 14 },
+  cancelBtn:     { flex: 1, backgroundColor: '#F3F4F6', borderRadius: 9, padding: 12, alignItems: 'center' },
+  cancelBtnText: { fontWeight: '700', color: '#6B7280', fontSize: 14 },
+  saveBtn:       { flex: 1, backgroundColor: RED, borderRadius: 9, padding: 12, alignItems: 'center' },
+  saveBtnText:   { fontWeight: '800', color: '#fff', fontSize: 14 },
 
   // Sets
   setsContainer: { marginTop: 4 },
   setHeaderRow:  { flexDirection: 'row', marginBottom: 4 },
-  colHeader:     { fontSize: 10, color: '#bbb', fontWeight: '700', textTransform: 'uppercase' },
-  setRow:        { flexDirection: 'row', alignItems: 'center', paddingVertical: 6, borderTopWidth: 1, borderTopColor: '#f0f0f0' },
-  setCol1:       { width: 30, fontSize: 12, color: '#999' },
-  setCol2:       { width: 70, fontSize: 13, fontWeight: '700', color: '#222' },
-  setCol3:       { flex: 1, fontSize: 12, color: '#888' },
+  colHeader:     { fontSize: 10, color: '#9CA3AF', fontWeight: '800', textTransform: 'uppercase', letterSpacing: 0.5 },
+  setRow:        { flexDirection: 'row', alignItems: 'center', paddingVertical: 8, borderTopWidth: 1, borderTopColor: '#F3F4F6' },
+  setCol1:       { width: 30, fontSize: 12, color: '#9CA3AF', fontWeight: '700' },
+  setCol2:       { width: 70, fontSize: 13, fontWeight: '800', color: '#111827' },
+  setCol3:       { flex: 1, fontSize: 12, color: '#6B7280' },
   setCol4Btns:   { flexDirection: 'row', gap: 8 },
-  setRowAction:  { fontSize: 14 },
-  setEditRow:    { flexDirection: 'row', gap: 6, paddingVertical: 6, alignItems: 'center', borderTopWidth: 1, borderTopColor: '#f0f0f0' },
-  addSetRow:     { flexDirection: 'row', gap: 6, paddingVertical: 6, alignItems: 'center' },
-  setEditInput:  { borderWidth: 1, borderColor: '#ddd', borderRadius: 6, padding: 7, fontSize: 13, backgroundColor: '#fff' },
-  setActionBtn:  { backgroundColor: RED, borderRadius: 6, paddingHorizontal: 10, paddingVertical: 7 },
-  setActionBtnText: { color: '#fff', fontWeight: '800', fontSize: 13 },
-  addSetBtn:     { paddingVertical: 8, alignItems: 'center', borderTopWidth: 1, borderTopColor: '#f0f0f0', marginTop: 4 },
-  addSetBtnText: { color: RED, fontWeight: '700', fontSize: 13 },
+  setRowAction:  { fontSize: 15 },
+  setEditRow:    { flexDirection: 'row', gap: 6, paddingVertical: 8, alignItems: 'center', borderTopWidth: 1, borderTopColor: '#F3F4F6' },
+  addSetRow:     { flexDirection: 'row', gap: 6, paddingVertical: 8, alignItems: 'center' },
+  setEditInput:  { borderWidth: 1.5, borderColor: '#E5E7EB', borderRadius: 8, padding: 8, fontSize: 13, backgroundColor: '#fff', color: '#111827' },
+  setActionBtn:  { backgroundColor: RED, borderRadius: 8, paddingHorizontal: 12, paddingVertical: 8 },
+  setActionBtnText: { color: '#fff', fontWeight: '900', fontSize: 13 },
+  addSetBtn:     { paddingVertical: 10, alignItems: 'center', borderTopWidth: 1, borderTopColor: '#F3F4F6', marginTop: 4 },
+  addSetBtnText: { color: RED, fontWeight: '800', fontSize: 13 },
 
   // Add exercise
-  addExBtn:      { borderWidth: 1.5, borderColor: RED, borderRadius: 10, padding: 14, alignItems: 'center', marginBottom: 12 },
-  addExBtnText:  { color: RED, fontWeight: '700', fontSize: 15 },
-  addExForm:     { backgroundColor: '#fff8f8', borderRadius: 12, padding: 14, marginBottom: 12, borderWidth: 1, borderColor: '#fdd' },
+  addExBtn:      { borderWidth: 2, borderColor: RED, borderRadius: 14, padding: 15, alignItems: 'center', marginBottom: 12, borderStyle: 'dashed' },
+  addExBtnText:  { color: RED, fontWeight: '800', fontSize: 15 },
+  addExForm:     { backgroundColor: '#FFF5F5', borderRadius: 14, padding: 16, marginBottom: 12, borderWidth: 1, borderColor: '#FECACA' },
 });

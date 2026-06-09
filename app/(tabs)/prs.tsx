@@ -4,6 +4,14 @@ import { useFocusEffect } from 'expo-router';
 import { getPersonalRecords } from '../../src/db/database';
 import { PersonalRecord } from '../../src/types';
 
+const RED   = '#e63946';
+const DARK  = '#111827';
+const MID   = '#4B5563';
+const MUTED = '#9CA3AF';
+const BG    = '#F3F4F6';
+const CARD  = '#FFFFFF';
+const BORDER= '#E5E7EB';
+
 export default function PRs() {
   const [records, setRecords] = useState<PersonalRecord[]>([]);
 
@@ -14,24 +22,42 @@ export default function PRs() {
   );
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Personal Records</Text>
+    <View style={s.container}>
       {records.length === 0 && (
-        <Text style={styles.empty}>No PRs yet. Start logging to set some!</Text>
+        <View style={s.emptyState}>
+          <Text style={s.emptyIcon}>🏆</Text>
+          <Text style={s.emptyTitle}>No PRs Yet</Text>
+          <Text style={s.emptyText}>Start logging sets to track your personal records.</Text>
+        </View>
       )}
       <FlatList
         data={records}
         keyExtractor={r => String(r.exerciseId)}
-        renderItem={({ item }) => (
-          <View style={styles.card}>
-            <View style={styles.badge}>
-              <Text style={styles.badgeText}>PR</Text>
+        contentContainerStyle={{ padding: 16, paddingBottom: 40 }}
+        showsVerticalScrollIndicator={false}
+        renderItem={({ item, index }) => (
+          <View style={s.card}>
+            <View style={s.rankBadge}>
+              <Text style={s.rankText}>#{index + 1}</Text>
             </View>
-            <View style={{ flex: 1 }}>
-              <Text style={styles.exerciseName}>{item.exerciseName}</Text>
-              <Text style={styles.weight}>{item.weightLbs} lbs × {item.reps} reps</Text>
-              <Text style={styles.date}>{item.date}</Text>
+            <View style={s.cardBody}>
+              <Text style={s.exerciseName}>{item.exerciseName}</Text>
+              <View style={s.prRow}>
+                <View style={s.prChip}>
+                  <Text style={s.prChipLabel}>Weight</Text>
+                  <Text style={s.prChipValue}>{item.weightLbs} lbs</Text>
+                </View>
+                <View style={s.prChip}>
+                  <Text style={s.prChipLabel}>Reps</Text>
+                  <Text style={s.prChipValue}>{item.reps}</Text>
+                </View>
+                <View style={[s.prChip, s.prChipDate]}>
+                  <Text style={s.prChipLabel}>Date</Text>
+                  <Text style={s.prDateText}>{item.date}</Text>
+                </View>
+              </View>
             </View>
+            <Text style={s.trophyIcon}>🏆</Text>
           </View>
         )}
       />
@@ -39,29 +65,36 @@ export default function PRs() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: { flex: 1, padding: 16, backgroundColor: '#fff' },
-  title: { fontSize: 22, fontWeight: '700', marginBottom: 16 },
-  empty: { color: '#999', textAlign: 'center', marginTop: 40 },
+const s = StyleSheet.create({
+  container:    { flex: 1, backgroundColor: BG },
+
+  emptyState:   { flex: 1, alignItems: 'center', justifyContent: 'center', padding: 40 },
+  emptyIcon:    { fontSize: 56, marginBottom: 14 },
+  emptyTitle:   { fontSize: 22, fontWeight: '800', color: DARK, marginBottom: 8 },
+  emptyText:    { color: MID, fontSize: 14, textAlign: 'center' },
+
   card: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#fff8f8',
-    borderRadius: 10,
-    padding: 14,
-    marginBottom: 10,
-    borderWidth: 1,
-    borderColor: '#fdd',
+    backgroundColor: CARD, borderRadius: 16, marginBottom: 12, padding: 16,
+    flexDirection: 'row', alignItems: 'center',
+    shadowColor: '#000', shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.07, shadowRadius: 8, elevation: 3,
+    borderLeftWidth: 4, borderLeftColor: RED,
   },
-  badge: {
-    backgroundColor: '#e63946',
-    borderRadius: 6,
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    marginRight: 14,
+  rankBadge:    {
+    backgroundColor: RED, borderRadius: 10, width: 36, height: 36,
+    alignItems: 'center', justifyContent: 'center', marginRight: 14,
   },
-  badgeText: { color: '#fff', fontWeight: '800', fontSize: 12 },
-  exerciseName: { fontWeight: '700', fontSize: 15 },
-  weight: { color: '#333', marginTop: 2, fontSize: 14 },
-  date: { color: '#aaa', marginTop: 2, fontSize: 12 },
+  rankText:     { color: '#fff', fontWeight: '900', fontSize: 13 },
+  cardBody:     { flex: 1 },
+  exerciseName: { fontSize: 15, fontWeight: '800', color: DARK, marginBottom: 10 },
+  prRow:        { flexDirection: 'row', gap: 8 },
+  prChip:       {
+    backgroundColor: BG, borderRadius: 8, paddingHorizontal: 10,
+    paddingVertical: 6, alignItems: 'center', flex: 1,
+  },
+  prChipDate:   { flex: 1.5 },
+  prChipLabel:  { fontSize: 9, fontWeight: '700', color: MUTED, textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 2 },
+  prChipValue:  { fontSize: 14, fontWeight: '900', color: RED },
+  prDateText:   { fontSize: 11, fontWeight: '700', color: MID },
+  trophyIcon:   { fontSize: 24, marginLeft: 10 },
 });

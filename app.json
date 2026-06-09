@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "Gym-tracker",
-    "slug": "Gym-tracker",
+    "name": "FitTrackr",
+    "slug": "fittrackr",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
