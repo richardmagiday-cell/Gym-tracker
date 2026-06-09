@@ -20,7 +20,7 @@ export interface WorkoutTemplate {
   exercises: TemplateExercise[];
 }
 
-// 0=Sun, 1=Mon, …
+// Fallback static schedule — replaced at runtime by DB active schedule
 export const DAILY_SCHEDULE: Record<number, string> = {
   1: 'pull_a',
   2: 'push_a',
@@ -32,68 +32,51 @@ export const DAILY_SCHEDULE: Record<number, string> = {
 };
 
 export const WORKOUT_TEMPLATES: WorkoutTemplate[] = [
-  // ─── PULL A (page 9) ───────────────────────────────────────────────────────
+  // ─── PULL A (page 5) ───────────────────────────────────────────────────────
   {
     key: 'pull_a',
     name: 'Pull A',
-    cardio: 'Walk backwards on treadmill incline 5 for 10 min',
+    cardio: 'No cardio',
     exercises: [
       {
-        exerciseId: 33,
-        name: 'Neutral Grip Pull Down',
+        exerciseId: 19,
+        name: 'Pull Ups',
         muscleGroup: 'Back',
         sets: [
-          { setNumber: 1, targetReps: '6',  prevWeight: '165' },
-          { setNumber: 2, targetReps: '6+', prevWeight: '165' },
-          { setNumber: 3, targetReps: '8+', prevWeight: '165', notes: 'Preferably smith' },
+          { setNumber: 1, targetReps: '8',  prevWeight: 'BW' },
+          { setNumber: 2, targetReps: '12', prevWeight: 'BW' },
         ],
       },
       {
-        exerciseId: 10,
-        name: 'Bench Press / Flat DBs',
+        exerciseId: 20,
+        name: 'Flat Dumbbell Press / Bench',
         muscleGroup: 'Chest',
         sets: [
-          { setNumber: 1, targetReps: '6',  prevWeight: '225 / 80s', notes: 'Heavy' },
-          { setNumber: 2, targetReps: '15', prevWeight: '185 / 70s' },
+          { setNumber: 1, targetReps: '8', prevWeight: '225 / 90 DBs' },
+          { setNumber: 2, targetReps: '8', prevWeight: '245 / 90 DBs' },
         ],
       },
       {
-        exerciseId: 34,
-        name: 'Pullups × Pullover Superset',
-        muscleGroup: 'Back',
-        exerciseNotes: 'Pullups to failure → immediately 10+ reps of pullovers (66 lbs)',
+        exerciseId: 21,
+        name: 'High Incline Smith Press',
+        muscleGroup: 'Chest / Shoulders',
         sets: [
-          { setNumber: 1, targetReps: 'F + 10', prevWeight: 'BW / 66' },
-          { setNumber: 2, targetReps: 'F + 11', prevWeight: 'BW / 66' },
-          { setNumber: 3, targetReps: 'F + 12', prevWeight: 'BW / 66' },
+          { setNumber: 1, targetReps: '6',   prevWeight: '225' },
+          { setNumber: 2, targetReps: '8',   prevWeight: '225' },
+          { setNumber: 3, targetReps: '12+', prevWeight: '185' },
         ],
       },
       {
-        exerciseId: 13,
-        name: 'Dips',
-        muscleGroup: 'Chest / Triceps',
+        exerciseId: 22,
+        name: 'Lateral Raises',
+        muscleGroup: 'Shoulders',
+        exerciseNotes: 'HEAVY',
         sets: [
-          { setNumber: 1, targetReps: 'F', prevWeight: 'BW (22 reps)' },
-          { setNumber: 2, targetReps: 'F', prevWeight: 'BW (14 reps)' },
-        ],
-      },
-      {
-        exerciseId: 35,
-        name: 'Single Hand DB Rows',
-        muscleGroup: 'Back',
-        exerciseNotes: 'Focus on deep stretch, go heavy',
-        sets: [
-          { setNumber: 1, targetReps: '8+', prevWeight: '80', notes: 'Each side' },
-          { setNumber: 2, targetReps: '8+', prevWeight: '80' },
-        ],
-      },
-      {
-        exerciseId: 36,
-        name: 'Wide Grip Rows',
-        muscleGroup: 'Back',
-        sets: [
-          { setNumber: 1, targetReps: '12+', prevWeight: '145' },
-          { setNumber: 2, targetReps: '12+', prevWeight: '145' },
+          { setNumber: 1, targetReps: '8',   prevWeight: '90' },
+          { setNumber: 2, targetReps: '8',   prevWeight: '90' },
+          { setNumber: 3, targetReps: '8',   prevWeight: '90' },
+          { setNumber: 4, targetReps: '15+', prevWeight: '90' },
+          { setNumber: 5, targetReps: '15+', prevWeight: '90' },
         ],
       },
       {
@@ -101,51 +84,41 @@ export const WORKOUT_TEMPLATES: WorkoutTemplate[] = [
         name: 'Chest Flys',
         muscleGroup: 'Chest',
         sets: [
-          { setNumber: 1, targetReps: '10+', prevWeight: '30.8 / 160' },
-          { setNumber: 2, targetReps: '10+', prevWeight: '30.8 / 160' },
-          { setNumber: 3, targetReps: '10+', prevWeight: '30.8 / 160' },
+          { setNumber: 1, targetReps: '8',   prevWeight: '160 / 85' },
+          { setNumber: 2, targetReps: '8',   prevWeight: '160 / 85' },
+          { setNumber: 3, targetReps: '15+', prevWeight: '160 / 85' },
+          { setNumber: 4, targetReps: '15+', prevWeight: '160 / 85' },
         ],
       },
       {
-        exerciseId: 37,
-        name: 'Tricep Flat Bar Pushdown',
+        exerciseId: 4,
+        name: 'Skull Crushers',
         muscleGroup: 'Triceps',
-        exerciseNotes: 'Heavy as possible',
+        exerciseNotes: 'If you do 12 go up in weight',
         sets: [
-          { setNumber: 1, targetReps: '8',   prevWeight: '77' },
-          { setNumber: 2, targetReps: '8',   prevWeight: '77' },
-          { setNumber: 3, targetReps: '10+', prevWeight: '77' },
+          { setNumber: 1, targetReps: '12+', prevWeight: '100' },
+          { setNumber: 2, targetReps: '12+', prevWeight: '100' },
+          { setNumber: 3, targetReps: '12+', prevWeight: '100' },
         ],
       },
       {
-        exerciseId: 38,
-        name: 'Lateral Raises (5/10 lb DBs)',
-        muscleGroup: 'Shoulders',
-        exerciseNotes: 'Light weight, pause at top',
+        exerciseId: 6,
+        name: 'Rope Tricep Extension',
+        muscleGroup: 'Triceps',
+        exerciseNotes: 'If you do 12 go up in weight',
         sets: [
-          { setNumber: 1, targetReps: '15+', prevWeight: '10 / 50', notes: '2-sec pause at top' },
-          { setNumber: 2, targetReps: '15+', prevWeight: '10 / 50', notes: '3-sec pause at top' },
-          { setNumber: 3, targetReps: '15+', prevWeight: '10 / 50', notes: 'No pause' },
+          { setNumber: 1, targetReps: '12+', prevWeight: '71.5 / 25 single' },
+          { setNumber: 2, targetReps: '12+', prevWeight: '71.5 / 25 single' },
+          { setNumber: 3, targetReps: '12+', prevWeight: '71.5 / 25 single' },
         ],
       },
       {
-        exerciseId: 39,
-        name: 'Tricep Overhead Extensions',
+        exerciseId: 13,
+        name: 'Dips',
         muscleGroup: 'Triceps',
         sets: [
-          { setNumber: 1, targetReps: '8+', prevWeight: '60.5 / 22 single' },
-          { setNumber: 2, targetReps: '8+', prevWeight: '71 / 22 single' },
-        ],
-      },
-      {
-        exerciseId: 1,
-        name: 'Hammer Curls',
-        muscleGroup: 'Biceps',
-        exerciseNotes: 'One arm at a time',
-        sets: [
-          { setNumber: 1, targetReps: '8-10', prevWeight: '45' },
-          { setNumber: 2, targetReps: '12+',  prevWeight: '45' },
-          { setNumber: 3, targetReps: '12+',  prevWeight: '45' },
+          { setNumber: 1, targetReps: 'F', prevWeight: 'BW' },
+          { setNumber: 2, targetReps: 'F', prevWeight: 'BW' },
         ],
       },
     ],
@@ -286,51 +259,68 @@ export const WORKOUT_TEMPLATES: WorkoutTemplate[] = [
     ],
   },
 
-  // ─── PUSH B (page 5) ───────────────────────────────────────────────────────
+  // ─── PUSH B (page 9) ───────────────────────────────────────────────────────
   {
     key: 'push_b',
     name: 'Push B',
-    cardio: 'No cardio',
+    cardio: 'Walk backwards on treadmill incline 5 for 10 min',
     exercises: [
       {
-        exerciseId: 19,
-        name: 'Pull Ups',
+        exerciseId: 33,
+        name: 'Neutral Grip Pull Down',
         muscleGroup: 'Back',
         sets: [
-          { setNumber: 1, targetReps: '8',  prevWeight: 'BW' },
-          { setNumber: 2, targetReps: '12', prevWeight: 'BW' },
+          { setNumber: 1, targetReps: '6',  prevWeight: '165' },
+          { setNumber: 2, targetReps: '6+', prevWeight: '165' },
+          { setNumber: 3, targetReps: '8+', prevWeight: '165', notes: 'Preferably smith' },
         ],
       },
       {
-        exerciseId: 20,
-        name: 'Flat Dumbbell Press / Bench',
+        exerciseId: 10,
+        name: 'Bench Press / Flat DBs',
         muscleGroup: 'Chest',
         sets: [
-          { setNumber: 1, targetReps: '8', prevWeight: '225 / 90 DBs' },
-          { setNumber: 2, targetReps: '8', prevWeight: '245 / 90 DBs' },
+          { setNumber: 1, targetReps: '6',  prevWeight: '225 / 80s', notes: 'Heavy' },
+          { setNumber: 2, targetReps: '15', prevWeight: '185 / 70s' },
         ],
       },
       {
-        exerciseId: 21,
-        name: 'High Incline Smith Press',
-        muscleGroup: 'Chest / Shoulders',
+        exerciseId: 34,
+        name: 'Pullups × Pullover Superset',
+        muscleGroup: 'Back',
+        exerciseNotes: 'Pullups to failure → immediately 10+ reps of pullovers (66 lbs)',
         sets: [
-          { setNumber: 1, targetReps: '6',   prevWeight: '225' },
-          { setNumber: 2, targetReps: '8',   prevWeight: '225' },
-          { setNumber: 3, targetReps: '12+', prevWeight: '185' },
+          { setNumber: 1, targetReps: 'F + 10', prevWeight: 'BW / 66' },
+          { setNumber: 2, targetReps: 'F + 11', prevWeight: 'BW / 66' },
+          { setNumber: 3, targetReps: 'F + 12', prevWeight: 'BW / 66' },
         ],
       },
       {
-        exerciseId: 22,
-        name: 'Lateral Raises',
-        muscleGroup: 'Shoulders',
-        exerciseNotes: 'HEAVY',
+        exerciseId: 13,
+        name: 'Dips',
+        muscleGroup: 'Chest / Triceps',
         sets: [
-          { setNumber: 1, targetReps: '8',   prevWeight: '90' },
-          { setNumber: 2, targetReps: '8',   prevWeight: '90' },
-          { setNumber: 3, targetReps: '8',   prevWeight: '90' },
-          { setNumber: 4, targetReps: '15+', prevWeight: '90' },
-          { setNumber: 5, targetReps: '15+', prevWeight: '90' },
+          { setNumber: 1, targetReps: 'F', prevWeight: 'BW (22 reps)' },
+          { setNumber: 2, targetReps: 'F', prevWeight: 'BW (14 reps)' },
+        ],
+      },
+      {
+        exerciseId: 35,
+        name: 'Single Hand DB Rows',
+        muscleGroup: 'Back',
+        exerciseNotes: 'Focus on deep stretch, go heavy',
+        sets: [
+          { setNumber: 1, targetReps: '8+', prevWeight: '80', notes: 'Each side' },
+          { setNumber: 2, targetReps: '8+', prevWeight: '80' },
+        ],
+      },
+      {
+        exerciseId: 36,
+        name: 'Wide Grip Rows',
+        muscleGroup: 'Back',
+        sets: [
+          { setNumber: 1, targetReps: '12+', prevWeight: '145' },
+          { setNumber: 2, targetReps: '12+', prevWeight: '145' },
         ],
       },
       {
@@ -338,41 +328,51 @@ export const WORKOUT_TEMPLATES: WorkoutTemplate[] = [
         name: 'Chest Flys',
         muscleGroup: 'Chest',
         sets: [
-          { setNumber: 1, targetReps: '8',   prevWeight: '160 / 85' },
-          { setNumber: 2, targetReps: '8',   prevWeight: '160 / 85' },
-          { setNumber: 3, targetReps: '15+', prevWeight: '160 / 85' },
-          { setNumber: 4, targetReps: '15+', prevWeight: '160 / 85' },
+          { setNumber: 1, targetReps: '10+', prevWeight: '30.8 / 160' },
+          { setNumber: 2, targetReps: '10+', prevWeight: '30.8 / 160' },
+          { setNumber: 3, targetReps: '10+', prevWeight: '30.8 / 160' },
         ],
       },
       {
-        exerciseId: 4,
-        name: 'Skull Crushers',
+        exerciseId: 37,
+        name: 'Tricep Flat Bar Pushdown',
         muscleGroup: 'Triceps',
-        exerciseNotes: 'If you do 12 go up in weight',
+        exerciseNotes: 'Heavy as possible',
         sets: [
-          { setNumber: 1, targetReps: '12+', prevWeight: '100' },
-          { setNumber: 2, targetReps: '12+', prevWeight: '100' },
-          { setNumber: 3, targetReps: '12+', prevWeight: '100' },
+          { setNumber: 1, targetReps: '8',   prevWeight: '77' },
+          { setNumber: 2, targetReps: '8',   prevWeight: '77' },
+          { setNumber: 3, targetReps: '10+', prevWeight: '77' },
         ],
       },
       {
-        exerciseId: 6,
-        name: 'Rope Tricep Extension',
-        muscleGroup: 'Triceps',
-        exerciseNotes: 'If you do 12 go up in weight',
+        exerciseId: 38,
+        name: 'Lateral Raises (5/10 lb DBs)',
+        muscleGroup: 'Shoulders',
+        exerciseNotes: 'Light weight, pause at top',
         sets: [
-          { setNumber: 1, targetReps: '12+', prevWeight: '71.5 / 25 single' },
-          { setNumber: 2, targetReps: '12+', prevWeight: '71.5 / 25 single' },
-          { setNumber: 3, targetReps: '12+', prevWeight: '71.5 / 25 single' },
+          { setNumber: 1, targetReps: '15+', prevWeight: '10 / 50', notes: '2-sec pause at top' },
+          { setNumber: 2, targetReps: '15+', prevWeight: '10 / 50', notes: '3-sec pause at top' },
+          { setNumber: 3, targetReps: '15+', prevWeight: '10 / 50', notes: 'No pause' },
         ],
       },
       {
-        exerciseId: 13,
-        name: 'Dips',
+        exerciseId: 39,
+        name: 'Tricep Overhead Extensions',
         muscleGroup: 'Triceps',
         sets: [
-          { setNumber: 1, targetReps: 'F', prevWeight: 'BW' },
-          { setNumber: 2, targetReps: 'F', prevWeight: 'BW' },
+          { setNumber: 1, targetReps: '8+', prevWeight: '60.5 / 22 single' },
+          { setNumber: 2, targetReps: '8+', prevWeight: '71 / 22 single' },
+        ],
+      },
+      {
+        exerciseId: 1,
+        name: 'Hammer Curls',
+        muscleGroup: 'Biceps',
+        exerciseNotes: 'One arm at a time',
+        sets: [
+          { setNumber: 1, targetReps: '8-10', prevWeight: '45' },
+          { setNumber: 2, targetReps: '12+',  prevWeight: '45' },
+          { setNumber: 3, targetReps: '12+',  prevWeight: '45' },
         ],
       },
     ],
@@ -546,6 +546,105 @@ export const WORKOUT_TEMPLATES: WorkoutTemplate[] = [
           { setNumber: 2, targetReps: '8+',  prevWeight: '135' },
           { setNumber: 3, targetReps: '8+',  prevWeight: '135' },
           { setNumber: 4, targetReps: '8+',  prevWeight: '115' },
+        ],
+      },
+    ],
+  },
+
+  // ─── ARMS (page 2) ─────────────────────────────────────────────────────────
+  {
+    key: 'arms',
+    name: 'Arms',
+    cardio: 'Walk backwards on treadmill incline 5 for 10 min',
+    exercises: [
+      {
+        exerciseId: 1,
+        name: 'Hammer Curls',
+        muscleGroup: 'Biceps',
+        exerciseNotes: 'One arm at a time',
+        sets: [
+          { setNumber: 1, targetReps: '8-12', prevWeight: '45' },
+          { setNumber: 2, targetReps: '8-12', prevWeight: '45' },
+          { setNumber: 3, targetReps: '12+',  prevWeight: '45' },
+          { setNumber: 4, targetReps: '12+',  prevWeight: '45' },
+        ],
+      },
+      {
+        exerciseId: 2,
+        name: 'Preacher Cable Curls',
+        muscleGroup: 'Biceps',
+        exerciseNotes: 'Go up in weight if you hit 12',
+        sets: [
+          { setNumber: 1, targetReps: '12+', prevWeight: '70' },
+          { setNumber: 2, targetReps: '12+', prevWeight: '70' },
+        ],
+      },
+      {
+        exerciseId: 3,
+        name: 'Flat Bar Curls',
+        muscleGroup: 'Biceps',
+        sets: [
+          { setNumber: 1, targetReps: '6-8', prevWeight: '50' },
+          { setNumber: 2, targetReps: '15',  prevWeight: '50' },
+        ],
+      },
+      {
+        exerciseId: 4,
+        name: 'Skull Crushers',
+        muscleGroup: 'Triceps',
+        exerciseNotes: 'If you do 12 go up in weight',
+        sets: [
+          { setNumber: 1, targetReps: '12+', prevWeight: '100' },
+          { setNumber: 2, targetReps: '12+', prevWeight: '100' },
+          { setNumber: 3, targetReps: '12+', prevWeight: '100' },
+        ],
+      },
+      {
+        exerciseId: 5,
+        name: 'EZ Bar Cable Push Downs',
+        muscleGroup: 'Triceps',
+        sets: [
+          { setNumber: 1, targetReps: '8',   prevWeight: '93.5' },
+          { setNumber: 2, targetReps: '8',   prevWeight: '93.5' },
+          { setNumber: 3, targetReps: '8',   prevWeight: '93.5' },
+          { setNumber: 4, targetReps: '12+', prevWeight: '88' },
+        ],
+      },
+      {
+        exerciseId: 6,
+        name: 'Rope Tricep Extension',
+        muscleGroup: 'Triceps',
+        sets: [
+          { setNumber: 1, targetReps: '8',   prevWeight: '71.5 / 22 single' },
+          { setNumber: 2, targetReps: '8',   prevWeight: '71.5 / 22 single' },
+          { setNumber: 3, targetReps: '12+', prevWeight: '71.5 / 22 single' },
+        ],
+      },
+      {
+        exerciseId: 7,
+        name: 'Eugene Extension',
+        muscleGroup: 'Triceps',
+        sets: [
+          { setNumber: 1, targetReps: '8+', prevWeight: '—' },
+          { setNumber: 2, targetReps: '8+', prevWeight: '—' },
+        ],
+      },
+      {
+        exerciseId: 8,
+        name: 'Prorated Curl',
+        muscleGroup: 'Biceps',
+        sets: [
+          { setNumber: 1, targetReps: 'F', prevWeight: '—' },
+          { setNumber: 2, targetReps: 'F', prevWeight: '—' },
+        ],
+      },
+      {
+        exerciseId: 9,
+        name: 'First Knuckle Push-ups',
+        muscleGroup: 'Chest / Triceps',
+        sets: [
+          { setNumber: 1, targetReps: 'F', prevWeight: 'BW' },
+          { setNumber: 2, targetReps: 'F', prevWeight: 'BW' },
         ],
       },
     ],

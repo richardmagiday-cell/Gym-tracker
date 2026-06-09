@@ -5,10 +5,10 @@ import {
 } from 'react-native';
 import { useFocusEffect } from 'expo-router';
 import {
-  WORKOUT_TEMPLATES, REST_DAY, DAILY_SCHEDULE,
-  getTodaysTemplate, getTemplateByKey, WorkoutTemplate, TemplateExercise,
+  WORKOUT_TEMPLATES, REST_DAY,
+  getTemplateByKey, WorkoutTemplate, TemplateExercise,
 } from '../../src/data/program';
-import { addSet, createWorkout, getLastSetsForExercise, getWorkoutsOnDates } from '../../src/db/database';
+import { addSet, createWorkout, getLastSetsForExercise, getWorkoutsOnDates, getActiveSchedule } from '../../src/db/database';
 
 // ─── helpers ────────────────────────────────────────────────────────────────
 
@@ -39,7 +39,8 @@ const TODAY_STR = new Date().toISOString().split('T')[0];
 // ─── component ───────────────────────────────────────────────────────────────
 
 export default function TodaysWorkout() {
-  const [template, setTemplate] = useState<WorkoutTemplate>(getTodaysTemplate());
+  const [schedule, setSchedule] = useState<Record<number, string>>({});
+  const [template, setTemplate] = useState<WorkoutTemplate>(REST_DAY);
   const [showDayPicker, setShowDayPicker] = useState(false);
   const [workoutId, setWorkoutId] = useState<number | null>(null);
   const [activeExerciseId, setActiveExerciseId] = useState<number | null>(null);
@@ -53,9 +54,16 @@ export default function TodaysWorkout() {
 
   useFocusEffect(
     useCallback(() => {
-      // Load last-session data for every exercise in this template
+      // Reload active schedule (may have changed in Program tab)
+      const activeSchedule = getActiveSchedule();
+      setSchedule(activeSchedule);
+      const todayKey = activeSchedule[new Date().getDay()] ?? 'rest';
+      const todayTemplate = getTemplateByKey(todayKey);
+      setTemplate(todayTemplate);
+
+      // Load last-session data for today's template
       const map: SessionMap = {};
-      for (const ex of template.exercises) {
+      for (const ex of todayTemplate.exercises) {
         const rows = getLastSetsForExercise(ex.name);
         const bySet: Record<number, LastSet> = {};
         rows.forEach(r => { bySet[r.setNumber] = r; });
@@ -64,7 +72,7 @@ export default function TodaysWorkout() {
       setSessionMap(map);
       // Load which days this week had workouts
       setCompletedDates(getWorkoutsOnDates(weekDays.map(d => d.date)));
-    }, [template])
+    }, [])
   );
 
   function switchTemplate(t: WorkoutTemplate) {
@@ -76,6 +84,15 @@ export default function TodaysWorkout() {
     setActiveExerciseId(null);
     setWeight('');
     setReps('');
+    // Reload last-session data for the new template
+    const map: SessionMap = {};
+    for (const ex of t.exercises) {
+      const rows = getLastSetsForExercise(ex.name);
+      const bySet: Record<number, LastSet> = {};
+      rows.forEach(r => { bySet[r.setNumber] = r; });
+      map[ex.exerciseId] = bySet;
+    }
+    setSessionMap(map);
   }
 
   function startWorkout() {
@@ -128,7 +145,7 @@ export default function TodaysWorkout() {
         {/* ── Week strip ── */}
         <ScrollView horizontal showsHorizontalScrollIndicator={false} style={s.weekStrip}>
           {weekDays.map(day => {
-            const key = DAILY_SCHEDULE[day.dayIndex];
+            const key = schedule[day.dayIndex] ?? 'rest';
             const wt = WORKOUT_TEMPLATES.find(t => t.key === key);
             const isToday = day.date === TODAY_STR;
             const isDone = completedDates.includes(day.date);
